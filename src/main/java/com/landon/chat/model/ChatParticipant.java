@@ -38,4 +38,5 @@ public class ChatParticipant {
     public void setParticipantType(String participantType) {
         this.participantType = participantType;
     }
+
 }

@@ -18,9 +18,14 @@ public class ChatController {
     @MessageMapping("/guestchat")
     @SendTo("/topic/guestchats")
     public ChatOutMessage handleMessaging(ChatInMessage message) throws Exception {
-
         Thread.sleep(1000); // simulate delay
-
         return new ChatOutMessage(message.getMessage());
     }
+
+    @MessageMapping("/guestupdate")
+    @SendTo("/topic/guestupdates")
+    public ChatOutMessage handleUserIsTyping(ChatInMessage message) throws Exception {
+        return new ChatOutMessage("Someone is typing...");
+    }
+
 }
