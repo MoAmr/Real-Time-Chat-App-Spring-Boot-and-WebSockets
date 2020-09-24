@@ -7,8 +7,7 @@ function setConnected(connected) {
     $("#disconnect").prop("disabled", !connected);
     if (connected) {
         $("#conversation").show();
-    }
-    else {
+    } else {
         $("#conversation").hide();
     }
     $("#chatMessages").html("");
@@ -31,7 +30,10 @@ function connect() {
             showJoinedName(JSON.parse(greeting.body).content);
         });
 
-        //JSON.parse(greeting.body).content
+        stompClient.subscribe("/topic/guestchats", function (greeting) {
+            showMessage(JSON.parse(greeting.body).content);
+        });
+
         sendName();
     });
 
@@ -44,6 +46,16 @@ function disconnect() {
     }
     setConnected(false);
     console.log("Disconnected");
+}
+
+function sendMessage() {
+    stompClient.send("/app/guestchat", {}, JSON.stringify({'message': $("#message").val()}));
+}
+
+function showMessage(message) {
+    $("#chatMessages").append("<tr><td>" + message + "</td></tr>");
+    $("#typingUpdates").html("<tr><td>&nbsp;</td></tr>");
+    $("#message").val("");
 }
 
 function sendName() {
@@ -60,9 +72,16 @@ $(function () {
         e.preventDefault();
     });
 
-    $( "#connect" ).click(function() { connect(); });
+    $("#connect").click(function () {
+        connect();
+    });
 
-    $( "#disconnect" ).click(function() { disconnect(); });
+    $("#disconnect").click(function () {
+        disconnect();
+    });
 
+    $("#send").click(function () {
+        sendMessage();
+    });
 });
 
