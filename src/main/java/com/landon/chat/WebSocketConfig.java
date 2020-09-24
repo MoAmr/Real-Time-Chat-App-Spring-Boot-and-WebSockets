@@ -1,5 +1,3 @@
-
-
 package com.landon.chat;
 
 import org.springframework.context.annotation.Configuration;

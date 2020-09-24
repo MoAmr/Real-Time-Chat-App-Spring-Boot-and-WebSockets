@@ -1,5 +1,6 @@
 var stompClient = null;
 var socket = null;
+var shortName = "";
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
@@ -10,27 +11,35 @@ function setConnected(connected) {
     else {
         $("#conversation").hide();
     }
-    $("#greetings").html("");
+    $("#chatMessages").html("");
 }
 
 function connect() {
+    // create the SockJS WebSocket-like object
     socket = new SockJS('/landon-stomp-chat');
+
+    // specify that we're using the STOMP protocol on the socket
     stompClient = Stomp.over(socket);
+
+    // implement the behavior we want whenever the client connects to the server (-or- user connects to chat app client by joining a group)
     stompClient.connect({}, function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/topic/greetings', function (greeting) {
-            showGreeting(JSON.parse(greeting.body).content);
+
+        // subscribe to topic and create the callback function that handles updates from the server
+        stompClient.subscribe("/topic/guestnames", function (greeting) {
+            showJoinedName(JSON.parse(greeting.body).content);
         });
-        
-        stompClient.subscribe('/topic/typing', function (greeting) {
-            showTyping(JSON.parse(greeting.body).content);
-        });
+
+        //JSON.parse(greeting.body).content
+        sendName();
     });
+
 }
 
 function disconnect() {
     if (stompClient !== null) {
+        $("#members").append("<tr><td>" + shortName + " just left</td></tr>");
         stompClient.disconnect();
     }
     setConnected(false);
@@ -38,29 +47,22 @@ function disconnect() {
 }
 
 function sendName() {
-    stompClient.send("/app/hello", {}, JSON.stringify({'senderName': $("#senderName").val()}));
+    stompClient.send("/app/guestjoin", {}, JSON.stringify({'message': $("#shortName").val()}));
 }
 
-function showGreeting(message) {
-    $("#greetings").append("<tr><td>" + message + "</td></tr>");
-    $("#typingUpdates").html("<tr><td>&nbsp;</td></tr>");
-}
-
-function showTyping(message) {
-	$("#typingUpdates").html("<tr><td>Someone is typing...</td></tr>");
+function showJoinedName(message) {
+    shortName = message;
+    $("#members").append("<tr><td>" + message + " just joined</td></tr>");
 }
 
 $(function () {
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
+
     $( "#connect" ).click(function() { connect(); });
+
     $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#send" ).click(function() { sendName(); });
-    
-    $("#senderName").keyup(function (e)  {
-    		console.log('user is typing');
-    		stompClient.send("/app/typing", {}, JSON.stringify({'senderName': $("#senderName").val()}));
-    	});
+
 });
 

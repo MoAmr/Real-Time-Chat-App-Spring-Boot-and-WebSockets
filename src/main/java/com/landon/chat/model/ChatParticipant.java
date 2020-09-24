@@ -1,7 +1,6 @@
 package com.landon.chat.model;
 
 public class ChatParticipant {
-
     private String firstName;
     private String lastName;
     private String shortName;

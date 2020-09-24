@@ -19,12 +19,15 @@ public class ChatOutMessage {
     public String getContent() {
         return content;
     }
+
     public void setContent(String content) {
         this.content = content;
     }
+
     public String getGroupName() {
         return groupName;
     }
+
     public void setGroupName(String groupName) {
         this.groupName = groupName;
     }

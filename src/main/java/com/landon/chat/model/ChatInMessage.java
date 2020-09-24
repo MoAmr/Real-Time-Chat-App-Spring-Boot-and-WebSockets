@@ -48,4 +48,3 @@ public class ChatInMessage {
         this.sentTimestamp = sentTimestamp;
     }
 }
-
