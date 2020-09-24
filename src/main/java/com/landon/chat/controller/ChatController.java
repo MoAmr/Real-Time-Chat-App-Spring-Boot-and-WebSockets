@@ -1,7 +1,8 @@
-package com.landon.chat;
+package com.landon.chat.controller;
 
 import com.landon.chat.model.ChatInMessage;
 import com.landon.chat.model.ChatOutMessage;
+import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -26,6 +27,14 @@ public class ChatController {
     @SendTo("/topic/guestupdates")
     public ChatOutMessage handleUserIsTyping(ChatInMessage message) throws Exception {
         return new ChatOutMessage("Someone is typing...");
+    }
+
+    @MessageExceptionHandler
+    @SendTo("/topic/errors")
+    public ChatOutMessage handleException(Throwable exception) {
+
+        ChatOutMessage myError = new ChatOutMessage("An Error Happened!");
+        return myError;
     }
 
 }
