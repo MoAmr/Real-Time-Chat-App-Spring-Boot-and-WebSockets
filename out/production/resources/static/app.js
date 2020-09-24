@@ -1,6 +1,7 @@
 var stompClient = null;
 var socket = null;
 var shortName = "";
+var timer = null;
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
@@ -34,6 +35,10 @@ function connect() {
             showMessage(JSON.parse(greeting.body).content);
         });
 
+        stompClient.subscribe('/topic/guestupdates', function (greeting) {
+            showTyping(JSON.parse(greeting.body).content);
+        });
+
         sendName();
     });
 
@@ -46,6 +51,10 @@ function disconnect() {
     }
     setConnected(false);
     console.log("Disconnected");
+}
+
+function showTyping(message) {
+    $("#typingUpdates").html("<tr><td>Someone is typing...</td></tr>");
 }
 
 function sendMessage() {
@@ -82,6 +91,13 @@ $(function () {
 
     $("#send").click(function () {
         sendMessage();
+    });
+
+    $("#message").keyup(function (e) {
+        // Send "is typing" message to server after keystrokes detected
+        clearTimeout(timer);
+        timer = setTimeout(1000);
+        stompClient.send("/app/guestupdate", {}, JSON.stringify({'message': $("#message").val()}));
     });
 });
 
