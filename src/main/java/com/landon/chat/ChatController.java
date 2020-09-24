@@ -1,4 +1,4 @@
-package com.landon.chat.controller;
+package com.landon.chat;
 
 import com.landon.chat.model.ChatInMessage;
 import com.landon.chat.model.ChatOutMessage;
