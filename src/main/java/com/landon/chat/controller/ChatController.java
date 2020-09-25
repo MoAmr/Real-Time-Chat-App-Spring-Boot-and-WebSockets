@@ -21,7 +21,8 @@ public class ChatController {
     @SendTo("/topic/guestchats")
     public ChatOutMessage handleMessaging(ChatInMessage message) throws Exception {
         Thread.sleep(1000); // simulate delay
-
+//        message = null;
+//        message.getMessage();
         return new ChatOutMessage(message.getMessage());
     }
 
@@ -39,7 +40,9 @@ public class ChatController {
 
     @MessageExceptionHandler
     @SendTo("/topic/errors")
-    public String handleException(Throwable exception) {
-        return exception.getMessage();
+    public ChatOutMessage handleException(Throwable exception) {
+
+        ChatOutMessage myError = new ChatOutMessage("An Error Happened!");
+        return myError;
     }
 }

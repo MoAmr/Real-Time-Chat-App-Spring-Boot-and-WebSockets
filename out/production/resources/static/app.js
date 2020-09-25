@@ -1,14 +1,14 @@
 var stompClient = null;
 var socket = null;
 var shortName = "";
-var timer = null;
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
     $("#disconnect").prop("disabled", !connected);
     if (connected) {
         $("#conversation").show();
-    } else {
+    }
+    else {
         $("#conversation").hide();
     }
     $("#chatMessages").html("");
@@ -37,6 +37,10 @@ function connect() {
 
         stompClient.subscribe('/topic/guestupdates', function (greeting) {
             showTyping(JSON.parse(greeting.body).content);
+        });
+
+        stompClient.subscribe('/topic/errors', function (greeting) {
+            showErrors(JSON.parse(greeting.body).content);
         });
 
         sendName();
@@ -76,27 +80,23 @@ function showJoinedName(message) {
     $("#members").append("<tr><td>" + message + " just joined</td></tr>");
 }
 
+function showErrors(message) {
+    $("#errorMessages").html("<tr><td>" + message + "</td></tr>");
+}
+
 $(function () {
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
 
-    $("#connect").click(function () {
-        connect();
-    });
+    $( "#connect" ).click(function() { connect(); });
 
-    $("#disconnect").click(function () {
-        disconnect();
-    });
+    $( "#disconnect" ).click(function() { disconnect(); });
 
-    $("#send").click(function () {
-        sendMessage();
-    });
+    $( "#send" ).click(function() { sendMessage(); });
 
-    $("#message").keyup(function (e) {
+    $("#message").keyup(function (e)  {
         // Send "is typing" message to server after keystrokes detected
-        clearTimeout(timer);
-        timer = setTimeout(1000);
         stompClient.send("/app/guestupdate", {}, JSON.stringify({'message': $("#message").val()}));
     });
 });
